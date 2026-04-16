@@ -2,6 +2,10 @@
 
 A simple artist voting app built with React, Vite, and TypeScript, using Firebase Auth and Firestore. Each vote stores a `previousHash` and `hash` to simulate a lightweight blockchain-style vote chain.
 
+<p align="center"> 
+<img src="https://raw.githubusercontent.com/lnvdth/Artist-Chain-Vote/refs/heads/main/preview.png"></img>
+</p>
+
 ## Features
 - Firebase authentication
 - One vote per user
