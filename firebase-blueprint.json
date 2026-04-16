@@ -1,0 +1,56 @@
+{
+  "entities": {
+    "Artist": {
+      "title": "Artist",
+      "description": "An artist available for voting",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "genre": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "voteCount": { "type": "number" }
+      },
+      "required": ["name", "genre", "photoUrl", "voteCount"]
+    },
+    "Vote": {
+      "title": "Vote",
+      "description": "A single vote transaction in the chain",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "artistId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "previousHash": { "type": "string" },
+        "hash": { "type": "string" },
+        "userName": { "type": "string" }
+      },
+      "required": ["userId", "artistId", "timestamp", "previousHash", "hash", "userName"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile data",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "hasVoted": { "type": "boolean" }
+      },
+      "required": ["email", "displayName"]
+    }
+  },
+  "firestore": {
+    "artists": {
+      "schema": "Artist",
+      "description": "Collection of artists"
+    },
+    "votes": {
+      "schema": "Vote",
+      "description": "Blockchain of votes"
+    },
+    "users": {
+      "schema": "User",
+      "description": "User profiles"
+    }
+  }
+}

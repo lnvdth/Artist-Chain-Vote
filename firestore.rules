@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "dii342005@gmail.com" || 
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    function isValidArtist(data) {
+      return data.name is string && data.name.size() > 0 &&
+             data.genre is string && data.genre.size() > 0 &&
+             data.photoUrl is string &&
+             data.voteCount is number;
+    }
+
+    function isValidVote(data) {
+      return data.userId == request.auth.uid &&
+             data.artistId is string &&
+             data.hash is string &&
+             data.previousHash is string &&
+             data.userName is string;
+    }
+
+    match /artists/{artistId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      // Allow admin to update anything, or authenticated users to only increment voteCount
+      allow update: if isAdmin() || 
+                     (isAuthenticated() && 
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['voteCount']) &&
+                      request.resource.data.voteCount == resource.data.voteCount + 1);
+    }
+
+    match /votes/{voteId} {
+      allow read: if true; // Public ledger
+      allow create: if isAuthenticated() && isValidVote(request.resource.data);
+      allow update, delete: if false;
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isOwner(userId);
+    }
+  }
+}
